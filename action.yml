@@ -2,9 +2,8 @@
 name: Expo Preview Branches
 author: Theodo-UK
 description: |
-  Actions workflow that generates a preview deployment on opening/updating a PR. 
-  On merge, the preview deployment is cleaned up and an update is pushed to the main 
-  branch.
+  Actions workflow that generates a preview deployment on opening/updating a PR, with auto clean
+  up and push to `main` on merge.
 branding:
   icon: git-branch
   color: green
