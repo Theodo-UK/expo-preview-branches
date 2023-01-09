@@ -1,0 +1,41 @@
+name: Deploy Preview Deployment
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  update:
+    name: Update Preview Branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install
+        uses: ./.github/actions/install
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Publish Update
+        id: publish-update
+        run: |
+          update_output=$(eas update --branch ${{ github.head_ref }} --auto --non-interactive --json)
+          ios_update_id=$(echo "$update_output" | jq -r '.[] | select(.platform == "ios") | .id ')
+          ios_update_uri=$(echo "$update_output" | jq -r '.[] | select(.platform == "ios") | .manifestPermalink ')
+          android_update_id=$(echo "$update_output" | jq -r '.[] | select(.platform == "android") | .id ')
+          android_update_uri=$(echo "$update_output" | jq -r '.[] | select(.platform == "android") | .manifestPermalink ')
+          echo "::set-output name=ios_update_id::$ios_update_id"
+          echo "::set-output name=ios_update_uri::$ios_update_uri"
+          echo "::set-output name=android_update_id::$android_update_id"
+          echo "::set-output name=android_update_uri::$android_update_uri"
+
+      - name: Comment PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          recreate: true
+          message: |
+            :rocket: Published to Expo Preview Branch: `${{github.head_ref}}`:
+            | Platform         | Deployment  |
+            | ---------------- | ----------- |
+            | iOS :apple:      | <img src="https://qr.expo.dev/eas-update?updateId=${{ steps.publish-update.outputs.ios_update_id }}&appScheme=exp&host=u.expo.dev" width="30%"/><br/><details><summary>Expand for link</summary><br /><a href="${{ steps.publish-update.outputs.ios_update_uri }}">${{ steps.publish-update.outputs.ios_update_uri }}</a></details>       |
+            | Android :robot:  | <img src="https://qr.expo.dev/eas-update?updateId=${{ steps.publish-update.outputs.android_update_id }}&appScheme=exp&host=u.expo.dev" width="30%"/><br/><details><summary>Expand for link</summary><br /><a href="${{ steps.publish-update.outputs.android_update_uri }}">${{ steps.publish-update.outputs.android_update_uri }}</a></details>        |

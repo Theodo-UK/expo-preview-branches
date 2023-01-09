@@ -1,0 +1,18 @@
+---
+name: Expo Preview Branches
+author: Theodo-UK
+description: |
+  Actions workflow that generates a preview deployment on opening/updating a PR. 
+  On merge, the preview deployment is cleaned up and an update is pushed to the main 
+  branch.
+branding:
+  icon: git-branch
+  color: green
+runs:
+  using: "composite"
+inputs:
+  token:
+    description: >
+      GitHub token for GitHub API requests. This should be set automatically, but can be overridden.
+    default: ${{ github.token }}
+    required: true
