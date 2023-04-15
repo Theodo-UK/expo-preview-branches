@@ -24,10 +24,10 @@ jobs:
           ios_update_uri=$(echo "$update_output" | jq -r '.[] | select(.platform == "ios") | .manifestPermalink ')
           android_update_id=$(echo "$update_output" | jq -r '.[] | select(.platform == "android") | .id ')
           android_update_uri=$(echo "$update_output" | jq -r '.[] | select(.platform == "android") | .manifestPermalink ')
-          echo "::set-output name=ios_update_id::$ios_update_id"
-          echo "::set-output name=ios_update_uri::$ios_update_uri"
-          echo "::set-output name=android_update_id::$android_update_id"
-          echo "::set-output name=android_update_uri::$android_update_uri"
+          echo "ios_update_id=$ios_update_id" >> $GITHUB_OUTPUT
+          echo "ios_update_uri=$ios_update_uri" >> $GITHUB_OUTPUT
+          echo "android_update_id=$android_update_id" >> $GITHUB_OUTPUT
+          echo "android_update_uri=$android_update_uri" >> $GITHUB_OUTPUT
 
       - name: Comment PR
         uses: marocchino/sticky-pull-request-comment@v2
